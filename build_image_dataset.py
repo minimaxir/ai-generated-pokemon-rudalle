@@ -29,6 +29,9 @@ image_url = (
     "sprites/pokemon/other/official-artwork/{0}.png"
 )
 
+# Create a cache for known translated captions
+trans_cache = {}
+
 r = requests.post(
     "https://beta.pokeapi.co/graphql/v1beta",
     json={
@@ -48,11 +51,16 @@ with open("data_desc.csv", "w", encoding="utf-8") as f:
         img = Image.blend(Image.new("RGBA", (size, size), (255, 255, 255, 0)), img, 1)
         name = f"{p_id}.png"
 
-        type_str = "/".join(
+        type_str = " and ".join(
             [t["pokemon_v2_type"]["name"].title() for t in p["pokemon_v2_pokemontypes"]]
         )
-        caption = f"A {type_str} Pokémon"
-        caption = google(caption, from_language="en", to_language="ru")
+        caption = f"A {type_str} type Pokémon"
+        if caption in trans_cache:
+            caption = trans_cache[caption]
+        else:
+            trans_caption = google(caption, from_language="en", to_language="ru")
+            trans_cache[caption] = trans_caption
+            caption = trans_caption
 
         img.save(os.path.join(folder, name))
         w.writerow([name, caption])
