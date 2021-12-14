@@ -2,9 +2,9 @@ from json.decoder import JSONDecodeError
 import os
 import csv
 
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 import requests
-from translatepy.translators.google import GoogleTranslateV2
+from translatepy import Translator
 from tqdm import tqdm
 
 folder = "images"
@@ -31,8 +31,10 @@ image_url = (
 )
 
 # Create a cache for known translated captions
-dl = GoogleTranslateV2()
 trans_cache = {}
+
+# Uses Yandex for translator, which in theory would do better for Russian
+ts = Translator()
 
 if not os.path.exists(folder):
     os.makedirs(folder)
@@ -51,30 +53,34 @@ with open("data_desc.csv", "w", encoding="utf-8") as f:
     w.writerow(["name", "caption"])
     for p in tqdm(pokemon, smoothing=0):
         p_id = p["id"]
-        img = Image.open(requests.get(image_url.format(p_id), stream=True).raw)
-        img = img.resize((size, size), Image.ANTIALIAS)
-
-        # https://stackoverflow.com/a/9459208
-        bg = Image.new("RGB", (size, size), (255, 255, 255))
-        bg.paste(img, mask=img.split()[3])
-        name = f"{p_id}.png"
-
-        type_str = " and ".join(
-            [
-                f'{t["pokemon_v2_type"]["name"].title()}-type'
-                for t in p["pokemon_v2_pokemontypes"]
-            ]
-        )
-        caption = f"A {type_str} Pokémon"
         try:
-            if caption in trans_cache:
-                caption = trans_cache[caption]
-            else:
-                trans_caption = dl.translate(caption, "ru").result
-                trans_cache[caption] = trans_caption
-                caption = trans_caption
+            img = Image.open(requests.get(image_url.format(p_id), stream=True).raw)
+            img = img.resize((size, size), Image.ANTIALIAS)
 
-            bg.save(os.path.join(folder, name))
-            w.writerow([name, caption])
-        except JSONDecodeError:
-            print(f"Translation failed for {p_id}")
+            # https://stackoverflow.com/a/9459208
+            bg = Image.new("RGB", (size, size), (255, 255, 255))
+            bg.paste(img, mask=img.split()[3])
+            name = f"{p_id}.png"
+
+            type_str = " and ".join(
+                [
+                    f'{t["pokemon_v2_type"]["name"].title()}-type'
+                    for t in p["pokemon_v2_pokemontypes"]
+                ]
+            )
+            caption = f"A {type_str} Pokémon"
+            try:
+                if caption in trans_cache:
+                    caption = trans_cache[caption]
+                else:
+                    trans_caption = ts.translate(caption, "ru").result
+                    trans_cache[caption] = trans_caption
+                    caption = trans_caption
+
+                bg.save(os.path.join(folder, name))
+                w.writerow([name, caption])
+            except JSONDecodeError:
+                break
+                # print(f"Translation failed for: {caption}")
+        except UnidentifiedImageError:
+            continue
