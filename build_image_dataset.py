@@ -1,3 +1,4 @@
+from json.decoder import JSONDecodeError
 import os
 import csv
 
@@ -33,6 +34,9 @@ image_url = (
 dl = GoogleTranslateV2()
 trans_cache = {}
 
+if not os.path.exists(folder):
+    os.makedirs(folder)
+
 r = requests.post(
     "https://beta.pokeapi.co/graphql/v1beta",
     json={
@@ -45,7 +49,7 @@ pokemon = r.json()["data"]["pokemon_v2_pokemon"]
 with open("data_desc.csv", "w", encoding="utf-8") as f:
     w = csv.writer(f)
     w.writerow(["name", "caption"])
-    for p in tqdm(pokemon[0:20], smoothing=0):
+    for p in tqdm(pokemon, smoothing=0):
         p_id = p["id"]
         img = Image.open(requests.get(image_url.format(p_id), stream=True).raw)
         img = img.resize((size, size), Image.ANTIALIAS)
@@ -62,12 +66,15 @@ with open("data_desc.csv", "w", encoding="utf-8") as f:
             ]
         )
         caption = f"A {type_str} Pokémon"
-        if caption in trans_cache:
-            caption = trans_cache[caption]
-        else:
-            trans_caption = dl.translate(caption, "ru").result
-            trans_cache[caption] = trans_caption
-            caption = trans_caption
+        try:
+            if caption in trans_cache:
+                caption = trans_cache[caption]
+            else:
+                trans_caption = dl.translate(caption, "ru").result
+                trans_cache[caption] = trans_caption
+                caption = trans_caption
 
-        bg.save(os.path.join(folder, name))
-        w.writerow([name, caption])
+            bg.save(os.path.join(folder, name))
+            w.writerow([name, caption])
+        except JSONDecodeError:
+            print(f"Translation failed for {p_id}")
