@@ -3,7 +3,7 @@ import csv
 
 from PIL import Image
 import requests
-from translators import google
+from translatepy.translators.google import GoogleTranslateV2
 from tqdm import tqdm
 
 folder = "images"
@@ -30,6 +30,7 @@ image_url = (
 )
 
 # Create a cache for known translated captions
+dl = GoogleTranslateV2()
 trans_cache = {}
 
 r = requests.post(
@@ -52,13 +53,16 @@ with open("data_desc.csv", "w", encoding="utf-8") as f:
         name = f"{p_id}.png"
 
         type_str = " and ".join(
-            [t["pokemon_v2_type"]["name"].title() for t in p["pokemon_v2_pokemontypes"]]
+            [
+                f'{t["pokemon_v2_type"]["name"].title()}-type'
+                for t in p["pokemon_v2_pokemontypes"]
+            ]
         )
-        caption = f"A {type_str} type Pokémon"
+        caption = f"A {type_str} Pokémon"
         if caption in trans_cache:
             caption = trans_cache[caption]
         else:
-            trans_caption = google(caption, from_language="en", to_language="ru")
+            trans_caption = dl.translate(caption, "ru").result
             trans_cache[caption] = trans_caption
             caption = trans_caption
 
