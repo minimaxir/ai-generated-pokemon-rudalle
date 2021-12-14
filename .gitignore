@@ -1,2 +1,4 @@
 *.ipynb
 /images
+.DS_Store
+*.csv
