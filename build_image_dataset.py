@@ -49,7 +49,10 @@ with open("data_desc.csv", "w", encoding="utf-8") as f:
         p_id = p["id"]
         img = Image.open(requests.get(image_url.format(p_id), stream=True).raw)
         img = img.resize((size, size), Image.ANTIALIAS)
-        img = Image.blend(Image.new("RGBA", (size, size), (255, 255, 255, 0)), img, 1)
+
+        # https://stackoverflow.com/a/9459208
+        bg = Image.new("RGB", (size, size), (255, 255, 255))
+        bg.paste(img, mask=img.split()[3])
         name = f"{p_id}.png"
 
         type_str = " and ".join(
@@ -66,5 +69,5 @@ with open("data_desc.csv", "w", encoding="utf-8") as f:
             trans_cache[caption] = trans_caption
             caption = trans_caption
 
-        img.save(os.path.join(folder, name))
+        bg.save(os.path.join(folder, name))
         w.writerow([name, caption])
