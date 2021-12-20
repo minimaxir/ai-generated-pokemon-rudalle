@@ -6,11 +6,9 @@ Python script to preprocess all Pokémon images (from [PokéAPI](https://pokeapi
 
 My modified Colab Notebook that I used to finetune the model on Pokémon is [here](https://colab.research.google.com/drive/1EnDbU9iUoQ_NmMc69HO29xmbKBxpdzJ7?usp=sharing): this Notebook's release is purely for demonstration/authentication purposes and no support will be given on how to use it because it is incredibly messy and embarrassing, but there may be a few ideas there that are useful for future generation. Some notes on how the process works are included below, with oppertunity to reproduce/improve it.
 
-The script outputs two things: an `images` folder with all the preprocessed images plus a `data_desc.csv` file which contains the image path and Russian caption pairs for finetuning.
+The script outputs two things: an `images` folder with all the preprocessed images plus a `data_desc.csv` file which contains the image path and Russian caption pairs for finetuning. Some examples of the preprocessed input images are present in the `images` folder, plus the final `data_desc.csv`.
 
 The model used is not included in this repo because it's currently too large (~3GB) to distribute (will add the model to Hugging Face at some point).
-
-Some examples of the preprocessed input images are present in the `images` folder.
 
 ## Preprocessing Script Notes
 
