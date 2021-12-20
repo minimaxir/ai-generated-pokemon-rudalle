@@ -14,7 +14,7 @@ The model used is not included in this repo because it's currently too large (~3
 
 - The GraphQL interface to PokéAPI is used as it allows to retrieve the type information plus IDs of all Pokémon in a single request. As a bonus, the returned IDs include the alternate forms of Pokémon (e.g. Mega) which would not otherwise be present just by incrementing IDs.
 - ruDALL-E requires 256x256px, RGB input images. In this case the source input images from PokéAPI are conveiently both square and larger than 256x256 so they downsample nicely. Since the images have transparency (RGBA), they are composited onto a white background.
-- The translation service used is Yandex, which apparently has decent rate limits, plus as a Russian company the translations from English to Russian should theoetically be better. A cache at runtime
+- The translation service used is [Yandex](https://translate.yandex.com), which apparently has decent rate limits, plus as a Russian company the translations from English to Russian should theoetically be better.
 - The captions (which are later translated into Russian) are determined by type. For example, a Grass/Poison type will have the caption `A Grass-type and Poison-type Pokémon`, which is then translated into Russian. In theory, this improves the finetuning process by allowing ruDALL-E to notice trends, plus _in theory_ this can be leveraged at generation-time to control the generation (e.g. prompt with `A Grass-type Pokémon` and have ruDALL-E generate only Grass-type Pokémon)
 - Due to potential rate limits on translation, translations are cached at runtime by Pokémon type(s) so the API is pinged only once.
 
