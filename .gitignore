@@ -1,7 +1,6 @@
 *.ipynb
 /images/*
 .DS_Store
-*.csv
 *.zip
 !images/1.png
 !images/10002.png
