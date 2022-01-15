@@ -4,11 +4,11 @@
 
 Python script to preprocess images of all Pokémon (the "official artwork" of each Pokémon via [PokéAPI](https://pokeapi.co)) into a format such that it can be used to finetune [ruDALL-E](https://github.com/sberbank-ai/ru-dalle) using the finetuning example Colab Notebook [linked in that repo](https://colab.research.google.com/drive/1Tb7J4PvvegWOybPfUubl5O7m5I24CBg5?usp=sharing). This workflow was used to create a model that resulted in AI-Generated Pokemon that went viral ([10k+ retweets](https://twitter.com/minimaxir/status/1470913487085785089) on Twitter + [30k+ upvotes](https://www.reddit.com/r/pokemon/comments/rgmyxp/i_trained_an_ai_on_all_the_official_pokemon/) on Reddit)
 
+You can play with the final finetuned model using [this Colab Notebook](https://colab.research.google.com/drive/1A3t2gQofQGeXo5z1BAr1zqYaqVg3czKd?usp=sharing), and it is also available [at Hugging Face](https://huggingface.co/minimaxir/ai-generated-pokemon-rudalle).
+
 My modified Colab Notebook that I used to finetune the model on Pokémon is [here](https://colab.research.google.com/drive/1EnDbU9iUoQ_NmMc69HO29xmbKBxpdzJ7?usp=sharing): this Notebook's release is purely for demonstration/authentication purposes and **no support will be given on how to use it** because it is incredibly messy and embarrassing, but there may be a few ideas there that are useful for future generation. Some notes on how the process works are included below, with oppertunity to reproduce/improve it.
 
 The script outputs two things: an `images` folder with all the preprocessed images plus a `data_desc.csv` file which contains the image path and Russian caption pairs for finetuning. Some examples of the preprocessed input images are present in the `images` folder, plus the final `data_desc.csv`.
-
-The model used is not included in this repo because it's currently too large (~3GB) to distribute (will add the model to Hugging Face at some point).
 
 ## Preprocessing Script Notes
 
